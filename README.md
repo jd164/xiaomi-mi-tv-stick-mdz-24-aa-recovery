@@ -113,27 +113,30 @@ adb shell "settings put global stay_on_while_plugged_in 3"
 
 ---
 
-## Part 5: Replacing the Bloated Google TV Launcher
+## Part 5: Replacing the Bloated Google TV Launcher with ExtremeSlimTV
 
 The official Google TV Launcher was updated to version `7.7+`, injecting full-screen ads, sponsored trailers, and recommendations for uninstalled apps. This consumed over **200MB of the stick's 980MB RAM**.
 
-We replace it with **Projectivy Launcher** (open-source, lightning fast, ad-free).
+We replace it with **[ExtremeSlimTV Launcher](https://github.com/yositapjani/ExtremeSlimTV)** — a custom, ultra-lightweight home screen built and verified specifically for the Xiaomi Mi TV Stick FHD (MDZ-24-AA / `aquaman`). It uses only **~26 MB of RAM** and includes OLED Care (pixel-shift orbit and idle dimming).
 
-### 1. Download & Install Projectivy Launcher
+### 1. Download & Install ExtremeSlimTV Launcher
 ```bash
-# Download the latest release from https://github.com/spocky/miproja1/releases
-adb install -r ProjectivyLauncher.apk
+# Download the latest release from https://github.com/yositapjani/ExtremeSlimTV/releases
+adb install -r ExtremeSlimTV-Launcher.apk
 ```
 
-### 2. Make Projectivy the Default & Permanently Remove Google TV Launcher
+### 2. Make ExtremeSlimTV the Sole Default & Remove Other Launchers
 ```bash
 # Completely uninstall the Google TV Launcher and recommendation services for user 0
 adb shell "pm uninstall --user 0 com.google.android.tvlauncher"
 adb shell "pm uninstall --user 0 com.google.android.tvrecommendations"
 
-# Verify that the Home button now directly maps to Projectivy
+# If previously installed, uninstall Projectivy Launcher as well:
+adb shell "pm uninstall --user 0 com.spocky.projengmenu"
+
+# Verify that the Home button now directly maps to ExtremeSlimTV
 adb shell "cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME"
-# Target output: com.spocky.projengmenu/.ui.home.MainActivity
+# Target output: com.kulwant.atvhome/.HomeActivity
 ```
 
 ---
@@ -230,7 +233,7 @@ adb shell "free -m"
 | :--- | :--- | :--- |
 | **Free RAM** | ~60 MB | **~185 MB – 195 MB** |
 | **Swap / ZRAM Usage** | > 180 MB | **~40 MB** |
-| **Home Launcher** | Google TV Ads (~200MB RAM) | **Projectivy Launcher (~30MB RAM)** |
+| **Home Launcher** | Google TV Ads (~200MB RAM) | **ExtremeSlimTV (~26MB RAM)** |
 | **Background Crashes** | Persistent (`NullPointerException`) | **0 crashes** |
 | **Solid Green Screen** | Occurred during 1080p DRM stream | **Eliminated (8-bit locked)** |
 | **Microphone & Voice** | Working | **Preserved 100%** |
