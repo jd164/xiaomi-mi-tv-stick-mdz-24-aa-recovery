@@ -63,13 +63,11 @@ Because connecting the stick directly to a standard PC USB port starves it of po
 2. Scroll down to **Build** and press the remote's center button **7 times** until it announces *"You are now a developer!"*.
 3. Go back one level, open **Developer options**, and enable **USB debugging**.
 4. Open the **Google Play Store** on the stick, search for and install **`ADB AppControl TV`**.
-5. Open **ADB AppControl TV** on your TV, go to its built-in terminal/console, and manually run:
+5. Open **ADB AppControl TV** on your TV, go to its built-in terminal/console, and execute:
    ```bash
    setprop service.adb.tcp.port 5555
-   stop adbd
-   start adbd
    ```
-   *(Alternatively, run `adb tcpip 5555` if available in the console interface).*
+   *(Note: Running `stop adbd` / `start adbd` requires root permissions which stock Android TV does not have. Simply **restart / reboot the stick** once after running `setprop` so `adbd` binds to port 5555 on startup).*
 6. Note your stick's local IP under **Settings** -> **Network & Internet** (e.g., `192.168.1.100`).
 7. Open a terminal / PowerShell on your computer (connected to the same Wi-Fi network) and run:
    ```bash
