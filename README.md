@@ -53,17 +53,22 @@ If your device is stuck on the Mi logo and won't reach the system:
 
 ## Part 3: Connecting via ADB (No PC Cable Needed)
 
-Because connecting the stick directly to a PC's standard USB port usually starves it of power, connect over **Wi-Fi**:
+Because connecting the stick directly to a standard PC USB port starves it of power (leading to immediate brownout reboots), you must connect over **Wi-Fi**.
 
+> **⚠️ Android 9 Limitation:**
+> In Android TV 9, the native "Wireless Debugging" pairing menu does not exist (it was only introduced in Android 11). Standard USB debugging will not expose port `5555` over the network automatically on boot without a helper app.
+
+### How to Enable ADB over Wi-Fi on Android 9:
 1. On your TV, navigate to **Settings** (`⚙`) -> **Device Preferences** -> **About**.
 2. Scroll down to **Build** and press the remote's center button **7 times** until it announces *"You are now a developer!"*.
 3. Go back one level, open **Developer options**, and enable **USB debugging**.
-4. Check your stick's local IP under **Settings** -> **Network & Internet** (e.g. `192.168.1.130`).
-5. Open a terminal / PowerShell on your computer (on the same Wi-Fi network) and run:
+4. Open the **Google Play Store** on the stick, search for and install **`ADB AppControl TV`** (or **WiFi ADB**).
+5. Open the app on your TV. It will initialize the local ADB daemon and display your device's connection address (e.g., `192.168.1.100:5555`).
+6. Open a terminal / PowerShell on your computer (connected to the same Wi-Fi network) and run:
    ```bash
    adb connect <STICK_IP>:5555
    ```
-6. On the TV screen, accept the prompt: **"Always allow from this computer"** -> **OK**.
+7. On your TV screen, accept the prompt: **"Always allow from this computer"** -> **OK**.
 
 ---
 
