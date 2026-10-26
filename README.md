@@ -82,25 +82,37 @@ Because connecting the stick directly to a standard PC USB port starves it of po
 ### The Root Cause:
 When streaming DRM-protected video (e.g., NOS TV, Netflix, or Chromecast), the Amlogic HDMI transmitter (`amhdmitx0`) was auto-negotiating **YUV 4:4:4 at 12-bit Deep Color** (`cd = 6` / `444,12bit`). The Mali-450 GPU and memory bus on this stick cannot sustain this bitrate, causing a color-space collapse (solid green screen) and a kernel panic.
 
-### The Fix via ADB:
+### The Fix via ADB & Display Settings:
 You can verify and fix the color depth directly:
 ```bash
 # Verify current HDMI attributes
 adb shell "cat /sys/class/amhdmitx/amhdmitx0/attr"
-# (If it displays 444,12bit, it will crash under DRM video load)
+# (If it displays 444,12bit or rgb,12bit, it will crash under DRM video load)
 ```
 
-To configure 8-bit standard color:
+To configure stable 8-bit standard RGB color:
 1. Open the Amlogic display settings activity:
    ```bash
    adb shell "am start -n com.android.tv.settings/com.droidlogic.tv.settings.display.DisplayActivity"
    ```
-2. Navigate to **Screen Resolution** -> **Color Depth Settings** -> Switch from *Enabled* to **`Disabled`**.
+2. Navigate to **Screen Resolution**:
+   * **Auto switch to best resolution:** Turn **`OFF`** (prevents the TV from renegotiating and forcing 12-bit Deep Color on boot).
+   * **Display Mode:** Select **`1080p 50Hz`** (50Hz matches European broadcast standards like NOS TV, avoiding frame rate conversion overhead).
+   * **Color Depth Settings:** Switch from *Enabled* to **`Disabled`** (`cd = 4` / 8-bit).
+   * **Color Space Settings:** Set to **`RGB`** (`cs = 0`).
 3. Confirm in the terminal:
    ```bash
    adb shell "cat /sys/class/amhdmitx/amhdmitx0/attr"
-   # Output should now be: 444,8bit
+   # Output should now be: rgb,8bit
    ```
+
+### Chromecast Stability (Google Cast vs AirScreen):
+* If Google Cast (`com.google.android.apps.mediashell`) crashes or causes video pipeline failures, avoid the bloated `v3.72+` update:
+  ```bash
+  # Revert to clean baseline Chromecast version
+  adb shell "pm uninstall com.google.android.apps.mediashell"
+  ```
+* Alternatively, install **AirScreen** from the Google Play Store (as recommended by the ExtremeSlimTV profile) for a lightweight, hardware-accelerated Cast/AirPlay receiver that handles DRM streams with a dedicated buffer.
 
 ### Fixing HDMI-CEC Handshake Boot Loops:
 To prevent the stick from freezing during boot when negotiating with certain TVs:
