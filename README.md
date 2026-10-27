@@ -125,28 +125,31 @@ adb shell "settings put global stay_on_while_plugged_in 3"
 
 ---
 
-## Part 5: Replacing the Bloated Google TV Launcher with ExtremeSlimTV
+## Part 5: Replacing the Launcher with ExtremeSlimTV-Lite
 
-The official Google TV Launcher was updated to version `7.7+`, injecting full-screen ads, sponsored trailers, and recommendations for uninstalled apps. This consumed over **200MB of the stick's 980MB RAM**.
+The official Google TV Launcher was updated to version `7.7+`, injecting full-screen ads, sponsored trailers, and recommendations for uninstalled apps, consuming over **200MB of RAM**.
 
-We replace it with **[ExtremeSlimTV Launcher](https://github.com/yositapjani/ExtremeSlimTV)** — a custom, ultra-lightweight home screen built and verified specifically for the Xiaomi Mi TV Stick FHD (MDZ-24-AA / `aquaman`). It uses only **~26 MB of RAM** and includes OLED Care (pixel-shift orbit and idle dimming).
+However, the original **ExtremeSlimTV Launcher** bundled a looping 15MB 720p/30fps video (`aerial.mp4`) that continuously ran in the background using the stick's **only hardware video decoder** (`OMX.amlogic.avc.decoder.awesome`). This exhausted the Contiguous Memory Allocator (leaving only **6.6 MB CMA** free out of 384 MB). Whenever video streaming or **Chromecast (e.g. NOS TV)** started, the decoder collided, causing kernel panics, triple-reboots, and solid red/green screens.
 
-### 1. Download & Install ExtremeSlimTV Launcher
+### The Solution: ExtremeSlimTV-Lite
+We patched the launcher into **ExtremeSlimTV-Lite** (`ExtremeSlimTV-Lite.apk`, ~1.4 MB):
+- Stripped the heavy background video loop while preserving the exact Apple TV dock, 5-app bar, clock, and OLED care.
+- Uses the built-in smooth `GradientBackground` instead of the hardware video player.
+- **Result:** Hardware video decoder is 100% free, free CMA jumped from **6.6 MB to 117 MB**, and system free RAM reached **~285 MB**.
+
+> **Note on Stick Home:** `stick-home` was also evaluated, but requires Android 10+ (SDK 29). The Mi TV Stick 1080p is on Android 9 (SDK 28), making ExtremeSlimTV-Lite the optimal launcher.
+
+### Installation & Activation:
 ```bash
-# Download the latest release from https://github.com/yositapjani/ExtremeSlimTV/releases
-adb install -r ExtremeSlimTV-Launcher.apk
-```
+# 1. Install ExtremeSlimTV-Lite
+adb install -r ExtremeSlimTV-Lite.apk
 
-### 2. Make ExtremeSlimTV the Sole Default & Remove Other Launchers
-```bash
-# Completely uninstall the Google TV Launcher and recommendation services for user 0
+# 2. Make ExtremeSlimTV the Sole Default & Remove Other Launchers
 adb shell "pm uninstall --user 0 com.google.android.tvlauncher"
 adb shell "pm uninstall --user 0 com.google.android.tvrecommendations"
-
-# If previously installed, uninstall Projectivy Launcher as well:
 adb shell "pm uninstall --user 0 com.spocky.projengmenu"
 
-# Verify that the Home button now directly maps to ExtremeSlimTV
+# 3. Verify that the Home button directly maps to ExtremeSlimTV
 adb shell "cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME"
 # Target output: com.kulwant.atvhome/.HomeActivity
 ```
@@ -243,11 +246,12 @@ adb shell "free -m"
 
 | Metric | Stock State (Before) | Optimized State (After) |
 | :--- | :--- | :--- |
-| **Free RAM** | ~60 MB | **~185 MB – 195 MB** |
-| **Swap / ZRAM Usage** | > 180 MB | **~40 MB** |
-| **Home Launcher** | Google TV Ads (~200MB RAM) | **ExtremeSlimTV (~26MB RAM)** |
+| **Free RAM** | ~60 MB | **~285 MB** |
+| **Hardware Video CMA Free** | 6.6 MB (99% exhausted) | **117 MB (100% available)** |
+| **Swap / ZRAM Usage** | > 180 MB | **~40 MB – 70 MB** |
+| **Home Launcher** | Google TV Ads (~200MB RAM) | **ExtremeSlimTV-Lite (~24MB RAM, no video loop)** |
 | **Background Crashes** | Persistent (`NullPointerException`) | **0 crashes** |
-| **Solid Green Screen** | Occurred during 1080p DRM stream | **Eliminated (8-bit locked)** |
+| **Chromecast & DRM Casting** | Crash / reboot loop / green screen | **Stable (Hardware decoder freed)** |
 | **Microphone & Voice** | Working | **Preserved 100%** |
 | **Widevine L1 DRM** | Working | **Preserved 100%** |
 

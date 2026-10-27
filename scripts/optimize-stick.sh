@@ -43,6 +43,8 @@ echo "Disabling background permissions via AppOps..."
 adb shell "cmd appops set com.mitv.download.service RUN_IN_BACKGROUND ignore"
 adb shell "cmd appops set com.xiaomi.mitv.updateservice RUN_IN_BACKGROUND ignore"
 adb shell "cmd appops set com.xiaomi.android.tvsetup.partnercustomizer RUN_IN_BACKGROUND ignore"
+adb shell "cmd appops set com.android.vending RUN_IN_BACKGROUND ignore"
+adb shell "cmd appops set com.netflix.ninja RUN_IN_BACKGROUND ignore"
 
 echo "Disabling non-essential background services..."
 PACKAGES_DISABLE=(
