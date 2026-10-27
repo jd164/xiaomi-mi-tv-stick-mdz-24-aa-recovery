@@ -139,7 +139,11 @@ We backported `stick-home` (v1.0.2) to run natively on Android 9 (SDK 28):
 2. **DEX Bytecode Patch:** Safely replaced missing Android 10 APIs:
    - `AppOpsManager.unsafeCheckOpNoThrow(...)` in `UsageAccess.isGranted` -> cleanly returns `false`.
    - `PowerManager.getCurrentThermalStatus()` in `SystemStatusWidget.read` -> returns `0` (`THERMAL_STATUS_NONE`).
-3. **Footprint & Performance Comparison:**
+3. **Full PT-PT Translation & Portugal Localization:**
+   - **Language:** 100% translated from Turkish to European Portuguese (greetings, date/clock, contextual menus, settings, status indicators).
+   - **Sports & Leagues:** Pre-configured with **Liga Portugal** (`4344`), **Liga dos Campeões** (`4480`), **Premier League** (`4328`), and **La Liga** (`4335`) in Portuguese.
+   - **Weather:** Open-Meteo configured with `language=pt` and Portugal city search defaults (ex: Lisboa).
+4. **Footprint & Performance Comparison:**
    - **APK Size:** Only **~284 KB** (compared to 1.4MB for ExtremeSlimTV-Lite and 15.7MB for ExtremeSlimTV).
    - **RAM Usage (PSS):** Only **~19 MB** (with **0 KB Graphics/GPU decoder memory allocated**).
    - **Video Decoders:** 0 hardware video decoders consumed, leaving 100% of CMA memory free for streaming and Chromecast.
