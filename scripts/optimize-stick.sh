@@ -25,6 +25,8 @@ echo "Uninstalling Xiaomi bloatware & crash-causing services..."
 PACKAGES_UNINSTALL=(
     "com.google.android.tvlauncher"
     "com.google.android.tvrecommendations"
+    "com.kulwant.atvhome"
+    "com.spocky.projengmenu"
     "com.mitv.download.service"
     "com.xiaomi.mitv.updateservice"
     "com.xiaomi.android.tvsetup.partnercustomizer"
